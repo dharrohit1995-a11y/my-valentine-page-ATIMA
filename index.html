@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atima ❤️ Be My Valentine</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #ff4e8d, #ff9a9e);
+    overflow: hidden;
+    text-align: center;
+    color: white;
+}
+
+/* HERO */
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.3rem;
+    margin-bottom: 30px;
+}
+
+button {
+    padding: 14px 28px;
+    font-size: 1rem;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+    margin: 10px;
+}
+
+#yesBtn {
+    background: white;
+    color: #ff4e8d;
+    font-weight: bold;
+    z-index: 2;
+}
+
+#noBtn {
+    background: #ff2e63;
+    color: white;
+    position: absolute;
+    z-index: 2;
+}
+
+/* DETAILS PAGE */
+.details {
+    display: none;
+    background: white;
+    color: #ff4e8d;
+    min-height: 100vh;
+    padding: 60px 20px;
+}
+
+.card {
+    background: #ffe6ec;
+    padding: 20px;
+    border-radius: 16px;
+    max-width: 500px;
+    margin: 15px auto;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.option {
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.option:hover {
+    transform: scale(1.03);
+}
+
+.selected {
+    background: #ff4e8d !important;
+    color: white !important;
+}
+
+.confirm-btn {
+    background: #ff4e8d;
+    color: white;
+    margin-top: 20px;
+}
+
+.final-message {
+    margin-top: 30px;
+    font-size: 1.2rem;
+    display: none;
+}
+
+/* Floating hearts */
+.heart {
+    position: fixed;
+    bottom: -10px;
+    font-size: 20px;
+    animation: floatUp 6s linear infinite;
+    opacity: 0.7;
+}
+
+@keyframes floatUp {
+    to { transform: translateY(-110vh); }
+}
+
+/* Confetti */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    animation: fall 3s linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    h1 { font-size: 1.8rem; }
+    button { width: 80%; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="hero" id="heroSection">
+    <h1>Atima ❤️<br>Will You Be My Valentine?</h1>
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No 😢</button>
+</div>
+
+<div class="details" id="detailsSection">
+    <h2>YOU SAID YES!!! 💕</h2>
+
+    <div class="card">
+        <p><strong>📅 Date:</strong> 14-Feb-26</p>
+        <p><strong>⏰ Time:</strong> 1:30 PM – 2:00 PM</p>
+    </div>
+
+    <h2 style="margin-top:30px;">📍 Place? Let’s Discuss ❤️</h2>
+
+    <div class="card option" onclick="selectOption(this)">
+        <h3>1️⃣ KAI</h3>
+        <p>Beautiful rooftop view. Limited food options.</p>
+        <p><strong>Priority:</strong> Good View 🌇</p>
+    </div>
+
+    <div class="card option" onclick="selectOption(this)">
+        <h3>2️⃣ Brahma Brews</h3>
+        <p>Chilled brewery setting with good food.</p>
+        <p><strong>Priority:</strong> Sit, Chill & Talk 🍻</p>
+    </div>
+
+    <div class="card option" onclick="selectOption(this)">
+        <h3>3️⃣ Amici</h3>
+        <p>Italian place with beautiful interiors. Small & cozy.</p>
+        <p><strong>Priority:</strong> Italian Food & Vibes 🍝</p>
+    </div>
+
+    <div class="card option" onclick="selectOption(this)">
+        <h3>4️⃣ The Square, Novotel</h3>
+        <p>Buffet with amazing variety.</p>
+        <p><strong>Priority:</strong> Food Variety 🍽</p>
+    </div>
+
+    <button class="confirm-btn" onclick="confirmSelection()">Confirm Selection 💘</button>
+
+    <div class="final-message" id="finalMessage">
+        I’m already excited no matter where we go…  
+        Because it’s not about the place — it’s about us ❤️✨
+    </div>
+</div>
+
+<!-- 🎵 Background Music -->
+<audio id="bgMusic" preload="metadata">
+    <source src="Toft_Willingham_Chez_Jessica_Gelinas_-_Greatest_Strength_Jujutsu_Kaisen_0_Movie_OST_2_(mp3.pm).mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const bgMusic = document.getElementById("bgMusic");
+
+let yesScale = 1;
+let selectedPlace = null;
+
+/* Chrome-safe music start */
+function startMusic() {
+    bgMusic.volume = 0;
+
+    bgMusic.addEventListener("loadedmetadata", () => {
+        bgMusic.currentTime = 25;
+
+        const playPromise = bgMusic.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => fadeIn());
+        }
+    }, { once: true });
+}
+
+/* Fade in */
+function fadeIn() {
+    let vol = 0;
+    const fade = setInterval(() => {
+        if (vol < 0.6) {
+            vol += 0.02;
+            bgMusic.volume = vol;
+        } else {
+            clearInterval(fade);
+        }
+    }, 120);
+}
+
+/* No button chaos */
+function moveNoButton() {
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 50);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+
+    yesScale += 0.2;
+    yesBtn.style.transform = `scale(${yesScale})`;
+}
+
+noBtn.addEventListener("mouseover", moveNoButton);
+noBtn.addEventListener("click", moveNoButton);
+
+/* YES click */
+yesBtn.addEventListener("click", () => {
+    startMusic();
+
+    document.body.style.overflow = "auto";
+    document.getElementById("heroSection").style.display = "none";
+    document.getElementById("detailsSection").style.display = "block";
+});
+
+/* Selection */
+function selectOption(card) {
+    document.querySelectorAll(".option").forEach(c => c.classList.remove("selected"));
+    card.classList.add("selected");
+    selectedPlace = card.querySelector("h3").innerText;
+}
+
+function confirmSelection() {
+    if (!selectedPlace) {
+        alert("Pick a place first 😌");
+        return;
+    }
+    document.getElementById("finalMessage").style.display = "block";
+}
+
+/* Floating hearts */
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = Math.random() * 20 + 10 + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+}
+setInterval(createHeart, 300);
+
+/* Confetti */
+function createConfetti() {
+    for (let i = 0; i < 80; i++) {
+        const confetti = document.createElement("div");
+        confetti.classList.add("confetti");
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.backgroundColor =
+            ["#ff4e8d", "#ff9a9e", "#ffffff", "#ff2e63"][Math.floor(Math.random() * 4)];
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + "s";
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+    }
+}
+</script>
+
+</body>
+</html>
